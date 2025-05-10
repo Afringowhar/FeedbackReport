@@ -164,12 +164,6 @@ def generate_pdf_report(self, task_id, student_id, html_task_id):
         
         pdf.save()
         
-        # # Create PDF record
-        # PDFReport.objects.create(
-        #     task=task,
-        #     file_data=buffer.getvalue(),
-        #     student_id=student_id
-        # )
 
         #  Generate filename with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

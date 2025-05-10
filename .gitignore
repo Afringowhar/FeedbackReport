@@ -21,3 +21,4 @@ __pycache__/
 !/app/.env.example  # Keep example env file
 
 
+README.md
