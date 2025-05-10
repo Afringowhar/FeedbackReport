@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+
+# Environments
+.env
+
+
+# Specific to your structure
+/app/media/reports/pdf/*  # Exclude generated PDFs but keep directory
+/app/core/__pycache__/
+/app/reports/__pycache__/
+
+
+# Keep these!
+!pyproject.toml
+!poetry.lock  # Actually should be tracked in most cases
+!docker-compose.yml
+!Dockerfile
+!README.md
+!/app/.env.example  # Keep example env file
+
+
