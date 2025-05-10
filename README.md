@@ -154,6 +154,7 @@ Here's the complete markdown file structure with descriptions for each file/fold
 | Package Management | Poetry                   |
 
 ## 📊 Database Models
+![deepseek_mermaid_20250510_1aad57](https://github.com/user-attachments/assets/d75f8f69-2dd8-47c5-9752-20aeb21a8c47)
 
 
 ## 🌐 API Endpoints
