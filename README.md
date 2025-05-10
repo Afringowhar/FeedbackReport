@@ -154,27 +154,22 @@ To access PostgreSQL database:
 
 
 ## 🌐 API Endpoints
-### HTML Reports
-| Endpoint                 | Method | Description                          |
-|--------------------------|--------|--------------------------------------|
-| `/assignment/json`       | POST   | Submit JSON/file to generate report  |
-| `/assignment/html/<id>`  | GET    | Retrieve HTML report by task ID      |
+## API Endpoints Documentation
 
-### PDF Reports
-| Endpoint                | Method | Description                          |
-|-------------------------|--------|--------------------------------------|
-| `/assignment/pdf/<id>`  | GET    | Download PDF report                  |
+| Endpoint | Method | Description | Input | Output |
+|----------|--------|-------------|-------|--------|
+| `/assignment/html` | POST | Generate HTML report | JSON payload or `.json` file with student events | `{html_task_id: string}` or with batch task IDs |
+| `/assignment/html/<task_id>` | GET | Get HTML report status/content | Task ID in URL | Completed: `{status, html, student_id}`<br>Pending: `{status}` |
+| `/assignment/pdf` | POST | Generate PDF report | JSON payload or `.json` file with student events | `{pdf_task_id: string}` or with batch task IDs |
+| `/assignment/pdf/<task_id>` | GET | Download PDF report | Task ID in URL | PDF file or `{status}` if pending |
+| `/assignment/report` | POST | Generate html, pdf or both reports | JSON payload or `.json` file + optional `format` header (`html`/`pdf`/`both`) | `{html_task_id, pdf_task_id}` or with batch task IDs |
+| `/assignment/insights/<task_id>` | GET | Get AI insights for report | Task ID in URL | `{student_id, status, insights}` |
 
-### AI Insights
-| Endpoint                   | Method | Description                          |
-|----------------------------|--------|--------------------------------------|
-| `/assignment/ai/<id>`| GET    | Get Gemini analysis for report       |
-
-## 📄 Sample Payload
+**Sample Input (JSON):**
 ```json
 {
-    "namespace": "course_101",
-    "student_id": "student_123",
+    "namespace": "course101",
+    "student_id": "stu123",
     "events": [
         {
             "type": "code_save",
