@@ -180,6 +180,38 @@ To access PostgreSQL database:
 }
 ```
 
+## Assumptions & Design Decisions
+
+- **Framework Choice**  
+  - Used Django + DRF for rapid REST API development and built-in ORM support.  
+- **Async Processing**  
+  - Adopted Celery + Redis to offload report generation and keep APIs non-blocking.  
+- **Task Monitoring**  
+  - Integrated Flower for real-time visibility of Celery tasks and retries.  
+- **Data Storage**  
+  - **HTML** stored in a `TEXT` column (PostgreSQL) to handle large markup without external FS.  
+  - **PDF** stored as `BYTEA`; simplifies backup and transactional consistency.
+- **Large HTML & PDF Data Handling**  
+  - Stored HTML in TEXT and PDF in BYTEA, indexed task_id/student_id for sub-second retrieval, minimizing I/O and maximizing performance.
+- **Schema Design**  
+  - Single `Report` model with `task_id`, `student_id`, `html_content`, `pdf_content` and `status` fields for easy lookup and indexing.  
+- **PDF Generation**  
+  - Chose ReportLab (pluggable) for direct HTML→PDF conversion; easy to swap libraries if needed.  
+- **Configuration & Packaging**  
+  - Managed Python deps via Poetry for reproducible installs.  
+  - Containerized all services (Django, PostgreSQL, Redis, Celery, Flower) in Docker Compose for one-command setup.  
+- **API Design**  
+  - Followed REST conventions
+- **Error Handling & Retries**  
+  - Enabled Celery retry logic (max 3/5 attempts) on transient failures (e.g., DB timeouts).  
+  - Unified error responses with clear JSON payloads.  
+- **Scalability**  
+  - Decoupled workers from web—allows independent scaling under heavy load.  
+- **Security & Cleanup**  
+  - Limited payload size to prevent overconsumption of memory.  
+  - Implemented periodic cleanup of stale tasks/reports older than configurable TTL.  
+
+
 ## 🛠️ Maintenance
 ```bash
 # View logs
