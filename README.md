@@ -1,4 +1,3 @@
-
 # Feedback Report Generator
 
 A Django-based service for generating student activity reports in HTML/PDF formats with async processing and AI insights.
@@ -69,12 +68,6 @@ To access PostgreSQL database:
 ## 📁 File Structure
 
 ```
-Here's the complete markdown file structure with descriptions for each file/folder:
-
-```markdown
-# Feedback Report Generator - File Structure with Descriptions
-
-```
 /feedbackreport
 ├── /app
 │   ├── /core
@@ -138,10 +131,11 @@ Here's the complete markdown file structure with descriptions for each file/fold
    - `get-docker.sh`: Helper script for Docker setup (if needed)
 
    - `README.md`: Project documentation and setup instructions   
-```
+
 
 
 ## 🛠️ Tech Stack
+```
 | Component          | Technology               |
 |--------------------|--------------------------|
 | Backend Framework  | Django 4.2 + DRF         |
@@ -152,9 +146,11 @@ Here's the complete markdown file structure with descriptions for each file/fold
 | AI Integration     | Google Gemini            |
 | Containerization   | Docker                   |
 | Package Management | Poetry                   |
+```
 
 ## 📊 Database Models
-![deepseek_mermaid_20250510_1aad57](https://github.com/user-attachments/assets/d75f8f69-2dd8-47c5-9752-20aeb21a8c47)
+![image](https://github.com/user-attachments/assets/60712c73-bec2-4688-99a8-af613a0a7f5b)
+
 
 
 ## 🌐 API Endpoints
@@ -204,4 +200,4 @@ docker-compose exec web python manage.py test
 docker-compose exec db psql -U django_user -d feedback_reports
 ```
 
-Made with love by [Afrin Gowhar] (https://www.linkedin.com/in/afrin-gowhar/overlay/contact-info/) and powered by [IIT Madras BS Degree]
+Made with love by [Afrin Gowhar](https://www.linkedin.com/in/afrin-gowhar/overlay/contact-info/) and powered by [IIT Madras BS Degree]
