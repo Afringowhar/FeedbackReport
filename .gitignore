@@ -7,9 +7,9 @@ __pycache__/
 
 
 # Specific to your structure
-/app/media/reports/pdf/*  # Exclude generated PDFs but keep directory
-/app/core/__pycache__/
-/app/reports/__pycache__/
+app/media/reports/pdf/*  # Exclude generated PDFs but keep directory
+app/core/__pycache__/
+app/reports/__pycache__/
 
 
 # Keep these!
