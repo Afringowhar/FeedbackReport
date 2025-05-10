@@ -1,0 +1,222 @@
+openapi: 3.0.0
+info:
+  title: Student Report Generation API
+  description: API for generating student reports in HTML and PDF formats with AI insights
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /assignment/json:
+    post:
+      summary: Generate HTML and/or PDF reports
+      description: |
+        Generate both HTML and PDF reports with a single call.
+        Accepts both direct JSON payload and file uploads.
+        Returns task IDs for both HTML and PDF reports.
+      tags:
+        - Reports
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: JSON file containing student data
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/StudentData'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/StudentData'
+      parameters:
+        - name: format
+          in: query
+          description: Specify which reports to generate (html, pdf, or both)
+          schema:
+            type: string
+            enum: [html, pdf, both]
+            default: both
+      responses:
+        202:
+          description: Report generation started
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SingleReportResponse'
+                  - $ref: '#/components/schemas/BatchReportResponse'
+        400:
+          description: Invalid input data
+        500:
+          description: Internal server error
+  /assignment/html/{task_id}:
+    get:
+      summary: Get HTML report status or content
+      description: Check the status of an HTML report or retrieve it if completed
+      tags:
+        - Reports
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Task ID returned from generation request
+      responses:
+        200:
+          description: Report status or content
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ReportStatus'
+                  - $ref: '#/components/schemas/HTMLReportResponse'
+        404:
+          description: Task not found
+  /assignment/pdf/{task_id}:
+    get:
+      summary: Get PDF report status or download
+      description: Check the status of a PDF report or download it if completed
+      tags:
+        - Reports
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Task ID returned from generation request
+      responses:
+        200:
+          description: PDF file download or status
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportStatus'
+        404:
+          description: Task not found
+        500:
+          description: Internal server error
+  /assignment/ai/{task_id}:
+    get:
+      summary: Get AI insights for a report
+      description: Retrieve AI-generated insights for a completed report
+      tags:
+        - AI Insights
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Task ID of a completed report
+      responses:
+        200:
+          description: AI insights generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsightsResponse'
+        404:
+          description: Task not found
+        425:
+          description: Report not ready for insights
+        500:
+          description: Internal server error
+
+components:
+  schemas:
+    StudentData:
+      type: object
+      required:
+        - student_id
+        - events
+        - namespace
+      properties:
+        student_id:
+          type: string
+          description: Unique identifier for the student
+        events:
+          type: array
+          items:
+            type: object
+          description: Array of student events/activities
+        namespace:
+          type: string
+          description: Namespace for the report data
+    SingleReportResponse:
+      type: object
+      properties:
+        html_task_id:
+          type: string
+          format: uuid
+          description: Task ID for HTML report generation
+        pdf_task_id:
+          type: string
+          format: uuid
+          description: Task ID for PDF report generation
+    BatchReportResponse:
+      type: object
+      properties:
+        batch_task_ids:
+          type: array
+          items:
+            type: object
+            properties:
+              html_task_id:
+                type: string
+                format: uuid
+              pdf_task_id:
+                type: string
+                format: uuid
+          description: Array of task IDs for each student
+        batch_status:
+          type: string
+          description: Status message for batch processing
+    ReportStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: Current status of the report generation
+    HTMLReportResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          const: completed
+        html:
+          type: string
+          description: HTML content of the report
+        student_id:
+          type: string
+          description: Student ID this report belongs to
+    InsightsResponse:
+      type: object
+      properties:
+        student_id:
+          type: string
+          description: Student ID these insights belong to
+        status:
+          type: string
+          const: Insights generated
+        insights:
+          type: string
+          description: AI-generated insights text
+        monitor_url:
+          type: string
+          description: URL to view the HTML report
+          example: "/assignment/html/123e4567-e89b-12d3-a456-426614174000"

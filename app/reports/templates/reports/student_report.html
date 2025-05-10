@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .summary {
+            margin: 30px 0;
+            background: #e9f7ef;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .unit-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 4px;
+        }
+        .unit-header {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .generated-at {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9f7ef;
+        }
+        .submission-row {
+            background-color: #e8f8f5;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Report: {{ student_id }}</h1>
+        <p class="generated-at">Generated at: {{ generated_at }}</p>
+
+        <div class="summary">
+            <h2>Summary</h2>
+            <p>Total events: {{ total_events }}</p>
+            <p>Total submissions: {{ submission_count }}</p>
+        </div>
+        
+        <h2>Event Timeline</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Unit</th>
+                    <th>Event Type</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event, alias in zipped_events %}
+                <tr class="{% if event.type == 'submission' %}submission-row{% endif %}">
+                    <td>{{ alias }}</td>
+                    <td>{{ event.unit }}</td>
+                    <td>{{ event.type|title }}</td>
+                    <td>{{ event.created_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
