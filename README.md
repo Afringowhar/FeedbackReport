@@ -98,7 +98,7 @@ To access PostgreSQL database:
 │   │   ├── apps.py                     # App configuration
 │   │   ├── llm_integration.py          # Gemini AI integration module
 │   │   ├── models.py                   # Database models definition
-│   │   ├── tasks.py                    # Celery tasks definitions
+│   │   ├── task.py                    # Celery tasks definitions
 │   │   ├── tests.py                    # Test cases
 │   │   ├── urls.py                     # App-specific URL routing
 │   │   └── views.py                    # API view definitions
