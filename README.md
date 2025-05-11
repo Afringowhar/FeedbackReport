@@ -13,7 +13,7 @@ A Django-based service for generating student activity reports in HTML/PDF forma
 ### Clone the Repository
 ```bash
 git clone https://github.com/Afringowhar/FeedbackReport.git
-cd feedback-report-generator
+cd feedbackreport/app
 ```
 
 ## 🚀 Quick Start
