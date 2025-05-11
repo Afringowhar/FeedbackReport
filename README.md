@@ -39,6 +39,15 @@ cd FeedbackReport/app
    docker-compose exec web python manage.py createsuperuser
    ```
 
+ 5. **Initiate and Run Celery Worker** (optional):
+   ```bash
+   docker-compose exec web celery -A core worker --loglevel=info
+   ```
+ 6. **Initiate/Run Flower** (optional):
+   ```bash
+   docker-compose exec web celery -A core flower --port=5555
+   ```
+
 ## 🌸 Flower Monitoring
 Access task monitoring at:
 ```
