@@ -58,37 +58,37 @@ class GenerateHTMLReportView(APIView):
     
     def _generate_html_report_for_student(self, student_data):
         """Generate HTML report for a single student."""
-        html_task_id = str(uuid.uuid4())
-        ReportTask.objects.create(task_id=html_task_id)
+        html_task_id = str(uuid.uuid4()) # Generate a unique task ID
+        ReportTask.objects.create(task_id=html_task_id) # Create a report task
         
         generate_html_report.delay(
             html_task_id,
             student_data['student_id'],
             student_data['events']
-        )
+        )                  # Run the report generation task in the background(Trigger Celery task)
         
         return {'html_task_id': html_task_id}
     
     def _extract_data(self, request):
         """Extract and validate data from request, handling both file uploads and direct JSON."""
         # Same implementation as in GenerateReportView
-        if 'file' in request.FILES:
-            file = request.FILES['file']
-            if not file.name.endswith('.json'):
+        if 'file' in request.FILES: # Check if a file was uploaded
+            file = request.FILES['file']  # Get the uploaded file
+            if not file.name.endswith('.json'): # Check if the file is a JSON file
                 return Response(
                     {"error": "Only JSON files are allowed"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
             try:
-                path = default_storage.save(f'tmp/{file.name}', ContentFile(file.read()))
+                path = default_storage.save(f'tmp/{file.name}', ContentFile(file.read())) # Save the file to the storage
                 with default_storage.open(path) as f:
-                    data = json.load(f)
-                default_storage.delete(path)
+                    data = json.load(f) # Load the JSON data from the file
+                default_storage.delete(path) # Delete the temporary file
                 
                 if isinstance(data, list):
                     for student in data:
-                        if not all(key in student for key in ['student_id', 'events', 'namespace']):
+                        if not all(key in student for key in ['student_id', 'events', 'namespace']): # Check if the student data is valid
                             return Response(
                                 {"error": "Invalid student data format. Required fields: namespace, student_id, events"},
                                 status=status.HTTP_400_BAD_REQUEST
@@ -280,12 +280,12 @@ class GetPDFReportView(APIView):
             
             if task.status == 'completed':
                 report = PDFReport.objects.get(task=task)
-                if report.file_data:
+                if report.file_data: # if file_data is not None
                     response = FileResponse(
                         io.BytesIO(report.file_data),
                         content_type='application/pdf'
-                    )
-                    response['Content-Disposition'] = f'attachment; filename="report_{task_id}.pdf"'
+                    ) # return pdf file
+                    response['Content-Disposition'] = f'attachment; filename="report_{task_id}.pdf"' # set filename
                     return response
                 elif report.file_path:
                     # Serve file from disk
@@ -326,7 +326,7 @@ class GenerateReportView(APIView):
             
             # Optional format parameter to specify which reports to generate
             # report_format = request.query_params.get('format', 'both').lower()
-            report_format = request.headers.get('format', 'both').lower()
+            report_format = request.headers.get('format', 'both').lower() # Use the 'both' header
            
             result = {}
             

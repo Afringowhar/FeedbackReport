@@ -15,23 +15,32 @@ from django.core.files.storage import default_storage
 
 logger = logging.getLogger(__name__)
 
-@shared_task(bind=True, max_retries=3, autoretry_for=(Exception,), retry_backoff=True)
-def generate_html_report(self, task_id, student_id, events):
+@shared_task(bind=True, max_retries=3, autoretry_for=(Exception,), retry_backoff=True) 
+def generate_html_report(self, task_id, student_id, events): 
     try:
-        task = ReportTask.objects.get(task_id=task_id)
-        task.status = 'processing'
-        task.started_at = timezone.now()
-        task.save()
+        task = ReportTask.objects.get(task_id=task_id) # Get the task from the database
+        task.status = 'processing' 
+        task.started_at = timezone.now() 
+        task.save() 
         
         # Process and sort events
-        sorted_events = sorted(events, key=lambda x: x['unit'])
-        question_aliases = [f"Q{i+1}" for i in range(len(sorted_events))]
+        sorted_events = sorted(events, key=lambda x: x['created_time']) # Sort events by unit
+        # question_aliases = [f"Q{i+1}" for i in range(len(sorted_events))] # Create question aliases
         
+        # Create a mapping from unit to question alias
+        # unique_units = sorted({event['unit'] for event in sorted_events})
+        unique_units = sorted({int(event['unit']) for event in events})
+        unit_to_alias = {unit: f"Q{i+1}" for i, unit in enumerate(unique_units)}
+
+        # Assign question aliases based on the unit
+        for event in sorted_events:
+            event['question_alias'] = unit_to_alias[int(event['unit'])]
+
         # Calculate submission count
         submission_count = sum(1 for event in sorted_events if event.get('type') == 'submission')
         
-        # Create zipped data for template
-        zipped_events = list(zip(sorted_events, question_aliases))
+        # Create zipped data for template (now each event already has its alias)
+        zipped_events = list(zip(sorted_events, [event['question_alias'] for event in sorted_events]))
         
         context = {
             'student_id': student_id,
@@ -39,7 +48,7 @@ def generate_html_report(self, task_id, student_id, events):
             'generated_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'total_events': len(sorted_events),
             'submission_count': submission_count,
-        }
+        } 
         
         html_content = render_to_string('reports/student_report.html', context)
         
@@ -47,12 +56,12 @@ def generate_html_report(self, task_id, student_id, events):
             task=task,
             content=html_content,
             student_id=student_id
-        )
+        ) # Create a new HTML report instance
         
         task.status = 'completed'
         task.completed_at = timezone.now()
         task.save()
-        return True
+        return True # Return True to indicate the task was completed successfully
 
     except Exception as e:
         task = ReportTask.objects.get(task_id=task_id)
@@ -78,8 +87,8 @@ def generate_pdf_report(self, task_id, student_id, html_task_id):
         html_report = HTMLReport.objects.get(task=html_task)
         
         # Create PDF with improved formatting
-        buffer = io.BytesIO()
-        pdf = canvas.Canvas(buffer, pagesize=letter)
+        buffer = io.BytesIO() # Create a buffer to store the PDF
+        pdf = canvas.Canvas(buffer, pagesize=letter) # Create a PDF canvas
         
         # Set up styles
         pdf.setTitle(f"Student Report - {student_id}")

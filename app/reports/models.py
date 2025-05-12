@@ -59,7 +59,7 @@ class PDFReport(models.Model):
     file_path = models.CharField(max_length=500, null=True, blank=True)
     
     created_at = models.DateTimeField(default=timezone.now)
-    student_id = models.CharField(max_length=255, null=True, blank=True)  # Added field
+    student_id = models.CharField(max_length=255, null=True, blank=True)
     
     class Meta:
         ordering = ['-created_at']
